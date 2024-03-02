@@ -21,7 +21,7 @@
       color: #333;
     }
     .chart-container {
-      width: 65%;
+      width: 45%;
       margin: 20px;
       background-color: #fff;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -55,7 +55,7 @@
       transition: background-color 0.3s ease-in-out;
     }
     .sub-button:hover {
-      background-color: #1E88E5;
+      background-color: #1e87e0;
     }
     @keyframes fadeIn {
       from {
@@ -70,6 +70,9 @@
 <body>
   <h1>Flour Production Dashboard</h1>
 
+  <button onclick="showDailyReports()">Daily Reports</button>
+  <button onclick="showMonthlyReports()">Monthly Reports</button>
+
   <div class="chart-container" id="dailyChartContainer">
     <canvas id="dailyProductionChart"></canvas>
   </div>
@@ -78,15 +81,12 @@
     <canvas id="monthlyProductionChart"></canvas>
   </div>
 
-  <button onclick="showDailyReports()" class="sub-button">Daily Reports</button>
-  <button onclick="showMonthlyReports()" class="sub-button">Monthly Reports</button>
-
   <div id="table-container" style="display: none; background-color: #fff; padding: 20px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 8px; overflow: hidden; animation: fadeIn 1s ease-in-out;">
-    <h2>Reports</h2>
+    <h2>Flour Production Table</h2>
     <table border="1" cellpadding="10">
       <thead>
         <tr>
-          <th>Date/Month</th>
+          <th>Date</th>
           <th>Flour Produced</th>
           <th>Bran Produced</th>
           <th>Impurities</th>
@@ -103,115 +103,127 @@
   <script>
     // Sample data (replace with actual data)
     const productionData = [
-      { date: "2024-02-13", flour: 171, bran: 20, impurities: 5, yield: 85 },
+      { date: "2024-02-13", flour: 171, bran: 50, impurities: 5 },
       // Add more data as needed
     ];
 
-    // Chart.js setup for daily production
-    const dailyCtx = document.getElementById("dailyProductionChart").getContext("2d");
-    const dailyProductionChart = new Chart(dailyCtx, {
-      type: "line",
-      data: {
-        labels: productionData.map((data) => data.date),
-        datasets: [
-          {
-            label: "Flour Production",
-            data: productionData.map((data) => data.flour),
-            borderColor: "#2196F3",
-            borderWidth: 2,
-            fill: false,
-          },
-          {
-            label: "Bran Production",
-            data: productionData.map((data) => data.bran),
-            borderColor: "#FF9800",
-            borderWidth: 2,
-            fill: false,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            type: "linear",
-            position: "bottom",
-          },
-        },
-      },
-    });
-
-    // Chart.js setup for monthly production
-    const monthlyCtx = document.getElementById("monthlyProductionChart").getContext("2d");
-    const monthlyProductionChart = new Chart(monthlyCtx, {
-      type: "line",
-      data: {
-        labels: productionData.map((data) => data.date),
-        datasets: [
-          {
-            label: "Monthly Flour Production",
-            data: productionData.map((data) => data.flour),
-            borderColor: "#4CAF50",
-            borderWidth: 2,
-            fill: false,
-          },
-          {
-            label: "Monthly Bran Production",
-            data: productionData.map((data) => data.bran),
-            borderColor: "#FFC107",
-            borderWidth: 2,
-            fill: false,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            type: "linear",
-            position: "bottom",
-          },
-        },
-      },
-    });
-
-    // Function to show table and hide charts
-    function showTable() {
-      document.querySelectorAll(".chart-container").forEach((chart) => {
-        chart.style.display = "none";
-      });
-      document.getElementById("table-container").style.display = "block";
-    }
-
-    // Function to show daily chart and hide monthly chart and table
+    // Function to show daily reports
     function showDailyReports() {
-      document.getElementById("table-container").style.display = "none";
-      document.getElementById("dailyChartContainer").style.display = "block";
       document.getElementById("monthlyChartContainer").style.display = "none";
+      document.getElementById("dailyChartContainer").style.display = "block";
+      document.getElementById("table-container").style.display = "none";
+      renderDailyChart();
     }
 
-    // Function to show monthly chart and hide daily chart and table
+    // Function to show monthly reports
     function showMonthlyReports() {
-      document.getElementById("table-container").style.display = "none";
       document.getElementById("dailyChartContainer").style.display = "none";
       document.getElementById("monthlyChartContainer").style.display = "block";
+      document.getElementById("table-container").style.display = "none";
+      renderMonthlyChart();
+    }
+
+    // Chart.js setup for daily production
+    function renderDailyChart() {
+      const dailyCtx = document.getElementById("dailyProductionChart").getContext("2d");
+      const dailyProductionChart = new Chart(dailyCtx, {
+        type: "line",
+        data: {
+          labels: productionData.map(data => data.date),
+          datasets: [
+            {
+              label: "Flour Production",
+              data: productionData.map(data => data.flour),
+              borderColor: "#2196F3",
+              borderWidth: 2,
+              fill: false,
+            },
+            {
+              label: "Bran Production",
+              data: productionData.map(data => data.bran),
+              borderColor: "#FF9800",
+              borderWidth: 2,
+              fill: false,
+            },
+          ],
+        },
+        options: getChartOptions(),
+      });
+    }
+
+    // Chart.js setup for monthly production
+    function renderMonthlyChart() {
+      const monthlyCtx = document.getElementById("monthlyProductionChart").getContext("2d");
+      const monthlyProductionChart = new Chart(monthlyCtx, {
+        type: "line",
+        data: {
+          labels: productionData.map(data => data.date),
+          datasets: [
+            {
+              label: "Flour Production",
+              data: calculateMonthlyProduction("flour"),
+              borderColor: "#4CAF50",
+              borderWidth: 2,
+              fill: false,
+            },
+            {
+              label: "Bran Production",
+              data: calculateMonthlyProduction("bran"),
+              borderColor: "#FFC107",
+              borderWidth: 2,
+              fill: false,
+            },
+          ],
+        },
+        options: getChartOptions(),
+      });
+    }
+
+    // Function to calculate monthly production
+    function calculateMonthlyProduction(type) {
+      const monthlyProduction = [];
+      for (let i = 0; i < productionData.length; i++) {
+        const monthlyData = productionData.slice(0, i + 1);
+        const sum = monthlyData.reduce((total, data) => total + data[type], 0);
+        monthlyProduction.push(sum);
+      }
+      return monthlyProduction;
+    }
+
+    // Function to get common chart options
+    function getChartOptions() {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            type: "linear",
+            position: "bottom",
+          },
+        },
+      };
     }
 
     // Populate table with data
     const tableBody = document.querySelector("#table-container tbody");
-    productionData.forEach((data) => {
+    productionData.forEach(data => {
       const row = document.createElement("tr");
+      const commercialYield = calculateCommercialYield(data.flour);
       row.innerHTML = `
         <td>${data.date}</td>
         <td>${data.flour}</td>
         <td>${data.bran}</td>
         <td>${data.impurities}</td>
-        <td>${data.yield}%</td>
+        <td>${commercialYield}%</td>
       `;
       tableBody.appendChild(row);
     });
+
+    // Function to calculate commercial yield
+    function calculateCommercialYield(flour) {
+      const wheatInput = 100; // Assumed wheat input
+      return ((flour / wheatInput) * 100).toFixed(2);
+    }
   </script>
 </body>
 </html>

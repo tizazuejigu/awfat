@@ -1,229 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Flour Production Dashboard</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Production Report</title>
   <style>
     body {
-      font-family: "Arial", sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f4f4f4;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
+      font-family: Arial, sans-serif;
     }
-    h1 {
-      color: #333;
-    }
-    .chart-container {
-      width: 45%;
-      margin: 20px;
-      background-color: #fff;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      border-radius: 8px;
-      overflow: hidden;
-      animation: fadeIn 1s ease-in-out;
-    }
+
     button {
-      margin: 10px;
-      padding: 8px 16px;
-      font-size: 16px;
-      cursor: pointer;
-      background-color: #4caf50;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      transition: background-color 0.3s ease-in-out;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-    .sub-button {
+      padding: 10px;
       margin: 5px;
-      padding: 8px 12px;
-      font-size: 14px;
       cursor: pointer;
-      background-color: #2196F3;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      transition: background-color 0.3s ease-in-out;
     }
-    .sub-button:hover {
-      background-color: #1e87e0;
+
+    #graphicalChart, #tabularData {
+      display: none;
     }
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
     }
   </style>
 </head>
 <body>
-  <h1>Flour Production Dashboard</h1>
 
-  <button onclick="showDailyReports()">Daily Reports</button>
-  <button onclick="showMonthlyReports()">Monthly Reports</button>
+  <button onclick="showGraphical()">Daily Report</button>
+  <button onclick="showGraphical()">Monthly Report</button>
 
-  <div class="chart-container" id="dailyChartContainer">
-    <canvas id="dailyProductionChart"></canvas>
+  <div id="graphicalChart">
+    <button onclick="showGraphicalData()">Graphical Representation</button>
+    <button onclick="showTabularData()">Tabular Representation</button>
+
+    <div id="chartContainer">
+      <!-- Graphical representation chart will be displayed here -->
+    </div>
   </div>
 
-  <div class="chart-container" id="monthlyChartContainer" style="display: none">
-    <canvas id="monthlyProductionChart"></canvas>
-  </div>
+  <div id="tabularData">
+    <button onclick="showGraphicalData()">Graphical Representation</button>
+    <button onclick="showTabularData()">Tabular Representation</button>
 
-  <div id="table-container" style="display: none; background-color: #fff; padding: 20px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 8px; overflow: hidden; animation: fadeIn 1s ease-in-out;">
-    <h2>Flour Production Table</h2>
-    <table border="1" cellpadding="10">
+    <table>
       <thead>
         <tr>
-          <th>Date</th>
-          <th>Flour Produced</th>
-          <th>Bran Produced</th>
+          <th>Date/Month</th>
+          <th>Flour Production</th>
+          <th>Bran Production</th>
           <th>Impurities</th>
           <th>Commercial Yield</th>
         </tr>
       </thead>
       <tbody>
-        <!-- Populate with data dynamically using JavaScript -->
+        <!-- Sample data (replace with actual data) -->
+        <tr>
+          <td>Jan 1</td>
+          <td>1000</td>
+          <td>200</td>
+          <td>10</td>
+          <td>85%</td>
+        </tr>
+        <!-- Add 19 more data points here -->
       </tbody>
     </table>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    // Sample data (replace with actual data)
-    const productionData = [
-      { date: "2024-02-13", flour: 171, bran: 50, impurities: 5 },
-      // Add more data as needed
-    ];
-
-    // Function to show daily reports
-    function showDailyReports() {
-      document.getElementById("monthlyChartContainer").style.display = "none";
-      document.getElementById("dailyChartContainer").style.display = "block";
-      document.getElementById("table-container").style.display = "none";
-      renderDailyChart();
+    function showGraphical() {
+      document.getElementById('graphicalChart').style.display = 'block';
+      document.getElementById('tabularData').style.display = 'none';
     }
 
-    // Function to show monthly reports
-    function showMonthlyReports() {
-      document.getElementById("dailyChartContainer").style.display = "none";
-      document.getElementById("monthlyChartContainer").style.display = "block";
-      document.getElementById("table-container").style.display = "none";
-      renderMonthlyChart();
+    function showGraphicalData() {
+      // Add code to display graphical representation chart
     }
 
-    // Chart.js setup for daily production
-    function renderDailyChart() {
-      const dailyCtx = document.getElementById("dailyProductionChart").getContext("2d");
-      const dailyProductionChart = new Chart(dailyCtx, {
-        type: "line",
-        data: {
-          labels: productionData.map(data => data.date),
-          datasets: [
-            {
-              label: "Flour Production",
-              data: productionData.map(data => data.flour),
-              borderColor: "#2196F3",
-              borderWidth: 2,
-              fill: false,
-            },
-            {
-              label: "Bran Production",
-              data: productionData.map(data => data.bran),
-              borderColor: "#FF9800",
-              borderWidth: 2,
-              fill: false,
-            },
-          ],
-        },
-        options: getChartOptions(),
-      });
-    }
-
-    // Chart.js setup for monthly production
-    function renderMonthlyChart() {
-      const monthlyCtx = document.getElementById("monthlyProductionChart").getContext("2d");
-      const monthlyProductionChart = new Chart(monthlyCtx, {
-        type: "line",
-        data: {
-          labels: productionData.map(data => data.date),
-          datasets: [
-            {
-              label: "Flour Production",
-              data: calculateMonthlyProduction("flour"),
-              borderColor: "#4CAF50",
-              borderWidth: 2,
-              fill: false,
-            },
-            {
-              label: "Bran Production",
-              data: calculateMonthlyProduction("bran"),
-              borderColor: "#FFC107",
-              borderWidth: 2,
-              fill: false,
-            },
-          ],
-        },
-        options: getChartOptions(),
-      });
-    }
-
-    // Function to calculate monthly production
-    function calculateMonthlyProduction(type) {
-      const monthlyProduction = [];
-      for (let i = 0; i < productionData.length; i++) {
-        const monthlyData = productionData.slice(0, i + 1);
-        const sum = monthlyData.reduce((total, data) => total + data[type], 0);
-        monthlyProduction.push(sum);
-      }
-      return monthlyProduction;
-    }
-
-    // Function to get common chart options
-    function getChartOptions() {
-      return {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            type: "linear",
-            position: "bottom",
-          },
-        },
-      };
-    }
-
-    // Populate table with data
-    const tableBody = document.querySelector("#table-container tbody");
-    productionData.forEach(data => {
-      const row = document.createElement("tr");
-      const commercialYield = calculateCommercialYield(data.flour);
-      row.innerHTML = `
-        <td>${data.date}</td>
-        <td>${data.flour}</td>
-        <td>${data.bran}</td>
-        <td>${data.impurities}</td>
-        <td>${commercialYield}%</td>
-      `;
-      tableBody.appendChild(row);
-    });
-
-    // Function to calculate commercial yield
-    function calculateCommercialYield(flour) {
-      const wheatInput = 100; // Assumed wheat input
-      return ((flour / wheatInput) * 100).toFixed(2);
+    function showTabularData() {
+      document.getElementById('graphicalChart').style.display = 'none';
+      document.getElementById('tabularData').style.display = 'block';
     }
   </script>
+
 </body>
 </html>

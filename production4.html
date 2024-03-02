@@ -7,26 +7,49 @@
   <style>
     body {
       font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom, #a8e6cf, #dcedc1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
     }
 
     button {
-      padding: 10px;
-      margin: 5px;
+      padding: 15px;
+      margin: 10px;
       cursor: pointer;
+      background-color: #5e7f5e;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
     }
 
-    #graphicalChart, #tabularData {
-      display: none;
+    form {
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    input {
+      padding: 10px;
+      margin-bottom: 15px;
+      width: 80%;
     }
 
     table {
       border-collapse: collapse;
       width: 100%;
+      margin-top: 20px;
     }
 
     th, td {
       border: 1px solid #ddd;
-      padding: 8px;
+      padding: 12px;
       text-align: left;
     }
 
@@ -53,7 +76,26 @@
     <button onclick="showGraphicalData()">Graphical Representation</button>
     <button onclick="showTabularData()">Tabular Representation</button>
 
-    <table>
+    <form id="productionForm">
+      <label for="date">Date/Month:</label>
+      <input type="text" id="date" name="date" placeholder="Jan 1">
+
+      <label for="flour">Flour Production:</label>
+      <input type="number" id="flour" name="flour" placeholder="Enter flour production">
+
+      <label for="bran">Bran Production:</label>
+      <input type="number" id="bran" name="bran" placeholder="Enter bran production">
+
+      <label for="impurities">Impurities:</label>
+      <input type="number" id="impurities" name="impurities" placeholder="Enter impurities">
+
+      <label for="yield">Commercial Yield:</label>
+      <input type="text" id="yield" name="yield" placeholder="Enter commercial yield">
+
+      <button type="button" onclick="addData()">Add Data</button>
+    </form>
+
+    <table id="dataTable">
       <thead>
         <tr>
           <th>Date/Month</th>
@@ -64,15 +106,7 @@
         </tr>
       </thead>
       <tbody>
-        <!-- Sample data (replace with actual data) -->
-        <tr>
-          <td>Jan 1</td>
-          <td>1000</td>
-          <td>200</td>
-          <td>10</td>
-          <td>85%</td>
-        </tr>
-        <!-- Add 19 more data points here -->
+        <!-- Data will be dynamically added here -->
       </tbody>
     </table>
   </div>
@@ -90,6 +124,28 @@
     function showTabularData() {
       document.getElementById('graphicalChart').style.display = 'none';
       document.getElementById('tabularData').style.display = 'block';
+    }
+
+    function addData() {
+      // Fetch values from the form
+      const date = document.getElementById('date').value;
+      const flour = document.getElementById('flour').value;
+      const bran = document.getElementById('bran').value;
+      const impurities = document.getElementById('impurities').value;
+      const yield = document.getElementById('yield').value;
+
+      // Create a new row in the table with the entered data
+      const table = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
+      const newRow = table.insertRow(table.rows.length);
+      const cells = [date, flour, bran, impurities, yield];
+
+      for (let i = 0; i < cells.length; i++) {
+        const cell = newRow.insertCell(i);
+        cell.textContent = cells[i];
+      }
+
+      // Clear the form fields
+      document.getElementById('productionForm').reset();
     }
   </script>
 

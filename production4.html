@@ -84,14 +84,14 @@
         animation: fadeIn 1s ease-in-out;
       "
     >
-      <h2>Flour Production, Bran, and Impurities</h2>
+      <h2>Flour Production, Bran, and Impurities Data</h2>
       <table border="1" cellpadding="10">
         <thead>
           <tr>
             <th>Date</th>
             <th>Daily Production</th>
             <th>Monthly Production</th>
-            <th>Commercial Yield</th>
+            <th>Commercial Yield (%)</th>
             <th>Bran Produced</th>
             <th>Impurities</th>
             <th>Wheat Input</th>
@@ -107,27 +107,28 @@
     <script>
       // Sample data (replace with actual data)
       const productionData = [
-        { date: "2024-02-13", daily: 171, bran: 20, impurities: 5, wheatInput: 200, yield: 85 },
+        { date: "2024-02-13", daily: 171, bran: 20, impurities: 5, wheatInput: 200, },
+        { date: "2024-02-14", daily: 183, bran: 22, impurities: 4, wheatInput: 210, },
         // Add more data as needed
       ];
 
-      // Calculate monthly data
-      const monthlyData = productionData.reduce((acc, data) => {
-        const month = data.date.substring(0, 7);
+      // Calculate monthly data from daily data
+      const monthlyData = productionData.reduce((acc, data, index) => {
+        const month = new Date(data.date).toLocaleString('en-us', { month: 'long' });
         if (!acc[month]) {
           acc[month] = {
             monthly: 0,
             bran: 0,
             impurities: 0,
             wheatInput: 0,
-            yield: 0,
           };
         }
+
         acc[month].monthly += data.daily;
         acc[month].bran += data.bran;
         acc[month].impurities += data.impurities;
         acc[month].wheatInput += data.wheatInput;
-        acc[month].yield = (acc[month].monthly / acc[month].wheatInput) * 100;
+
         return acc;
       }, {});
 
@@ -144,6 +145,20 @@
               label: "Daily Flour Production",
               data: productionData.map((data) => data.daily),
               borderColor: "#2196F3",
+              borderWidth: 2,
+              fill: false,
+            },
+            {
+              label: "Bran Produced",
+              data: productionData.map((data) => data.bran),
+              borderColor: "#FF5722",
+              borderWidth: 2,
+              fill: false,
+            },
+            {
+              label: "Impurities",
+              data: productionData.map((data) => data.impurities),
+              borderColor: "#FF9800",
               borderWidth: 2,
               fill: false,
             },
@@ -174,6 +189,20 @@
               label: "Monthly Flour Production",
               data: Object.values(monthlyData).map((data) => data.monthly),
               borderColor: "#4CAF50",
+              borderWidth: 2,
+              fill: false,
+            },
+            {
+              label: "Monthly Bran Produced",
+              data: Object.values(monthlyData).map((data) => data.bran),
+              borderColor: "#FF5722",
+              borderWidth: 2,
+              fill: false,
+            },
+            {
+              label: "Monthly Impurities",
+              data: Object.values(monthlyData).map((data) => data.impurities),
+              borderColor: "#FF9800",
               borderWidth: 2,
               fill: false,
             },
@@ -218,16 +247,15 @@
       const tableBody = document.querySelector("#table-container tbody");
       productionData.forEach((data) => {
         const row = document.createElement("tr");
-        const commercialYield = (data.daily / data.wheatInput) * 100;
+        const commercialYield = ((data.daily / data.wheatInput) * 100).toFixed(2);
         row.innerHTML = `
-        <td>${data.date}</td>
-        <td>${data.daily}</td>
-        <td>${monthlyData[data.date.substring(0, 7)].monthly}</td>
-        <td>${commercialYield.toFixed(2)}%</td>
-        <td>${data.bran}</td>
-        <td>${data.impurities}</td>
-        <td>${data.wheatInput}</td>
-      `;
+          <td>${data.date}</td>
+          <td>${data.daily}</td>
+          <td>${data.bran}</td>
+          <td>${data.impurities}</td>
+          <td>${data.wheatInput}</td>
+          <td>${commercialYield}%</td>
+        `;
         tableBody.appendChild(row);
       });
     </script>

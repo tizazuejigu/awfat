@@ -84,13 +84,16 @@
         animation: fadeIn 1s ease-in-out;
       "
     >
-      <h2>Daily and Monthly Flour Production</h2>
+      <h2>Flour Production and Analysis</h2>
       <table border="1" cellpadding="10">
         <thead>
           <tr>
             <th>Date</th>
             <th>Daily Production</th>
             <th>Monthly Production</th>
+            <th>Bran Produced</th>
+            <th>Impurities</th>
+            <th>Wheat Input</th>
             <th>Commercial Yield</th>
           </tr>
         </thead>
@@ -104,20 +107,22 @@
     <script>
       // Sample data (replace with actual data)
       const productionData = [
-        { date: "2024-02-13", daily: 171, monthly: 3000, yield: 85 },
-        { date: "2024-02-14", daily: 183, monthly: 3100, yield: 87 },
-        { date: "2024-02-15", daily: 124.5, monthly: 3000, yield: 85 },
-        { date: "2024-02-16", daily: 63.5, monthly: 3100, yield: 87 },
-        { date: "2024-02-17", daily: 84, monthly: 3000, yield: 85 },
-        { date: "2024-02-19", daily: 174, monthly: 3100, yield: 87 },
-        { date: "2024-02-20", daily: 49, monthly: 3000, yield: 85 },
-        { date: "2024-02-21", daily: 83.5, monthly: 3100, yield: 87 },
-        { date: "2024-02-22", daily: 120, monthly: 3000, yield: 85 },
-        { date: "2024-02-23", daily: 143, monthly: 3100, yield: 87 },
-        { date: "2024-02-24", daily: 44.5, monthly: 3000, yield: 85 },
-        { date: "2024-03-02", daily: 120, monthly: 3100, yield: 87 },
+        { date: "2024-02-13", daily: 171, bran: 25, impurities: 5, wheatInput: 200, yield: 85 },
         // Add more data as needed
       ];
+
+      // Calculate monthly data from daily data
+      const monthlyData = productionData.reduce((acc, curr) => {
+        const monthYear = curr.date.slice(0, 7); // Extracts YYYY-MM
+        if (!acc[monthYear]) {
+          acc[monthYear] = { monthly: 0, bran: 0, impurities: 0, wheatInput: 0 };
+        }
+        acc[monthYear].monthly += curr.daily;
+        acc[monthYear].bran += curr.bran;
+        acc[monthYear].impurities += curr.impurities;
+        acc[monthYear].wheatInput += curr.wheatInput;
+        return acc;
+      }, {});
 
       // Chart.js setup for daily production
       const dailyCtx = document
@@ -156,11 +161,11 @@
       const monthlyProductionChart = new Chart(monthlyCtx, {
         type: "line",
         data: {
-          labels: productionData.map((data) => data.date),
+          labels: Object.keys(monthlyData),
           datasets: [
             {
               label: "Monthly Flour Production",
-              data: productionData.map((data) => data.monthly),
+              data: Object.values(monthlyData).map((data) => data.monthly),
               borderColor: "#4CAF50",
               borderWidth: 2,
               fill: false,
@@ -209,7 +214,10 @@
         row.innerHTML = `
         <td>${data.date}</td>
         <td>${data.daily}</td>
-        <td>${data.monthly}</td>
+        <td>${monthlyData[data.date.slice(0, 7)].monthly}</td>
+        <td>${data.bran}</td>
+        <td>${data.impurities}</td>
+        <td>${data.wheatInput}</td>
         <td>${data.yield}%</td>
       `;
         tableBody.appendChild(row);

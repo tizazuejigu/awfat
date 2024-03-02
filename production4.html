@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flour Production Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js" />
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+      }
+      h1 {
+        color: #333;
+      }
+      .chart-container {
+        width: 45%;
+        margin: 20px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        overflow: hidden;
+        animation: fadeIn 1s ease-in-out;
+      }
+      button {
+        margin: 10px;
+        padding: 8px 16px;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: #4caf50;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        transition: background-color 0.3s ease-in-out;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Flour Production Dashboard</h1>
+
+    <div class="chart-container" id="dailyChartContainer">
+      <canvas id="dailyProductionChart"></canvas>
+    </div>
+
+    <div
+      class="chart-container"
+      id="monthlyChartContainer"
+      style="display: none"
+    >
+      <canvas id="monthlyProductionChart"></canvas>
+    </div>
+
+    <button onclick="showTable()">Show Table</button>
+    <button onclick="showDailyChart()">Daily Chart</button>
+    <button onclick="showMonthlyChart()">Monthly Chart</button>
+
+    <div
+      id="table-container"
+      style="
+        display: none;
+        background-color: #fff;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        overflow: hidden;
+        animation: fadeIn 1s ease-in-out;
+      "
+    >
+      <h2>Daily and Monthly Flour Production</h2>
+      <table border="1" cellpadding="10">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Daily Production</th>
+            <th>Monthly Production</th>
+            <th>Commercial Yield</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Populate with data dynamically using JavaScript -->
+        </tbody>
+      </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      // Sample data (replace with actual data)
+      const productionData = [
+        { date: "2024-03-01", daily: 100, monthly: 3000, yield: 85 },
+        { date: "2024-03-02", daily: 120, monthly: 3100, yield: 87 },
+        // Add more data as needed
+      ];
+
+      // Chart.js setup for daily production
+      const dailyCtx = document
+        .getElementById("dailyProductionChart")
+        .getContext("2d");
+      const dailyProductionChart = new Chart(dailyCtx, {
+        type: "line",
+        data: {
+          labels: productionData.map((data) => data.date),
+          datasets: [
+            {
+              label: "Daily Flour Production",
+              data: productionData.map((data) => data.daily),
+              borderColor: "#2196F3",
+              borderWidth: 2,
+              fill: false,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              type: "linear",
+              position: "bottom",
+            },
+          },
+        },
+      });
+
+      // Chart.js setup for monthly production
+      const monthlyCtx = document
+        .getElementById("monthlyProductionChart")
+        .getContext("2d");
+      const monthlyProductionChart = new Chart(monthlyCtx, {
+        type: "line",
+        data: {
+          labels: productionData.map((data) => data.date),
+          datasets: [
+            {
+              label: "Monthly Flour Production",
+              data: productionData.map((data) => data.monthly),
+              borderColor: "#4CAF50",
+              borderWidth: 2,
+              fill: false,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              type: "linear",
+              position: "bottom",
+            },
+          },
+        },
+      });
+
+      // Function to show table and hide charts
+      function showTable() {
+        document.querySelectorAll(".chart-container").forEach((chart) => {
+          chart.style.display = "none";
+        });
+        document.getElementById("table-container").style.display = "block";
+      }
+
+      // Function to show daily chart and hide monthly chart and table
+      function showDailyChart() {
+        document.getElementById("table-container").style.display = "none";
+        document.getElementById("dailyChartContainer").style.display = "block";
+        document.getElementById("monthlyChartContainer").style.display = "none";
+      }
+
+      // Function to show monthly chart and hide daily chart and table
+      function showMonthlyChart() {
+        document.getElementById("table-container").style.display = "none";
+        document.getElementById("dailyChartContainer").style.display = "none";
+        document.getElementById("monthlyChartContainer").style.display =
+          "block";
+      }
+
+      // Populate table with data
+      const tableBody = document.querySelector("#table-container tbody");
+      productionData.forEach((data) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+        <td>${data.date}</td>
+        <td>${data.daily}</td>
+        <td>${data.monthly}</td>
+        <td>${data.yield}%</td>
+      `;
+        tableBody.appendChild(row);
+      });
+    </script>
+  </body>
+</html>

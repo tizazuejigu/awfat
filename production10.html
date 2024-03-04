@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f4f4f4;
+      }
+
+      .report-button {
+        position: relative;
+        display: inline-block;
+        padding: 15px 30px;
+        font-size: 18px;
+        font-weight: bold;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        margin: 10px;
+        transition: background-color 0.3s, color 0.3s, transform 0.3s;
+      }
+
+      .dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        display: none;
+        background-color: #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+        overflow: hidden;
+      }
+
+      .report-button:hover .dropdown {
+        display: block;
+      }
+
+      .dropdown-item {
+        display: block;
+        padding: 10px;
+        text-decoration: none;
+        color: #333;
+        transition: background-color 0.3s, transform 0.3s;
+      }
+
+      .dropdown-item:hover {
+        background-color: #3498db;
+        color: #fff;
+        transform: scale(1.05);
+      }
+
+      .report-button:hover {
+        background-color: #3498db;
+        color: #fff;
+        transform: scale(1.05);
+      }
+
+      #table-container {
+        max-height: 400px; /* Set a fixed height for the container */
+        overflow-y: auto; /* Add a vertical scrollbar if needed */
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+      }
+
+      th {
+        background-color: #3498db;
+        color: #fff;
+      }
+
+      canvas {
+        width: 80%; /* Set the width to 80% of the viewport width */
+        height: auto; /* Let the height adjust automatically */
+        display: block;
+        margin-top: 20px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    </style>
+    <title>Report Buttons</title>
+  </head>
+  <body>
+    <div class="report-button">
+      Daily Report
+      <div class="dropdown">
+        <a class="dropdown-item" href="#" onclick="showLineChart('daily')"
+          >Line Chart</a
+        >
+        <a class="dropdown-item" href="#" onclick="showTable('daily')">Table</a>
+      </div>
+    </div>
+
+    <div class="report-button">
+      Monthly Report
+      <div class="dropdown">
+        <a class="dropdown-item" href="#" onclick="showLineChart('monthly')"
+          >Line Chart</a
+        >
+        <a class="dropdown-item" href="#" onclick="showTable('monthly')"
+          >Table</a
+        >
+      </div>
+    </div>
+
+    <div id="table-container">
+      <!-- Table content will be inserted dynamically -->
+    </div>
+
+    <script>
+      // Example data for daily report table
+      const dailyReportData = [
+        {
+          Date: "2024-03-03",
+          WheatInput: "1700 kg",
+          Flour: 1200,
+          Bran: 600,
+          Impurities: "30 kg",
+          CommercialYield: "82%",
+        },
+        {
+          Date: "2024-03-04",
+          WheatInput: "1800 kg",
+          Flour: 1300,
+          Bran: 650,
+          Impurities: "35 kg",
+          CommercialYield: "83%",
+        },
+        // Add more data as needed
+      ];
+
+      // Example data for monthly report table
+      const monthlyReportData = [
+        {
+          Date: "2024-04-01",
+          WheatInput: "50000 kg",
+          Flour: 35000,
+          Bran: 18000,
+          Impurities: "700 kg",
+          CommercialYield: "88%",
+        },
+        {
+          Date: "2024-04-02",
+          WheatInput: "52000 kg",
+          Flour: 38000,
+          Bran: 19000,
+          Impurities: "750 kg",
+          CommercialYield: "89%",
+        },
+        // Add more data as needed
+      ];
+
+      function getTableData(type) {
+        return type === "daily" ? dailyReportData : monthlyReportData;
+      }
+
+      function showTable(type) {
+        removeExistingTable();
+        removeExistingChart();
+
+        const tableData = getTableData(type);
+        const currentDate = new Date().toLocaleDateString();
+
+        const tableContainer = document.getElementById("table-container");
+        tableContainer.innerHTML = `
+        <h2>${
+          type === "daily" ? "Daily" : "Monthly"
+        } Report Table - ${currentDate}</h2>
+        <table id="reportTable">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Wheat Input</th>
+              <th>Flour</th>
+              <th>Bran</th>
+              <th>Impurities</th>
+              <th>Commercial Yield</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tableData
+              .map(
+                (row) =>
+                  `<tr><td>${row.Date}</td><td>${row.WheatInput}</td><td>${row.Flour}</td><td>${row.Bran}</td><td>${row.Impurities}</td><td>${row.CommercialYield}</td></tr>`
+              )
+              .join("")}
+          </tbody>
+        </table>
+      `;
+      }
+
+      function showLineChart(type) {
+        removeExistingTable();
+        removeExistingChart();
+
+        const tableData = getTableData(type);
+
+        let labels;
+        if (type === "daily") {
+          labels = tableData.map((_, index) => `day${index + 1}`);
+        } else if (type === "monthly") {
+          labels = tableData.map((_, index) => `month${index + 1}`);
+        }
+
+        const flourData = tableData.map((row) => row.Flour);
+        const branData = tableData.map((row) => row.Bran);
+
+        const lineChartCanvas = document.createElement("canvas");
+        lineChartCanvas.id = "lineChart";
+
+        const lineChartContainer = document.getElementById("table-container");
+        lineChartContainer.appendChild(lineChartCanvas);
+
+        const lineChartContext = lineChartCanvas.getContext("2d");
+
+        const lineChart = new Chart(lineChartContext, {
+          type: "line",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label:
+                  type === "daily"
+                    ? "Daily Report - Flour"
+                    : "Monthly Report - Flour",
+                borderColor: "rgb(255, 99, 132)",
+                data: flourData,
+                fill: false,
+              },
+              {
+                label:
+                  type === "daily"
+                    ? "Daily Report - Bran"
+                    : "Monthly Report - Bran",
+                borderColor: "rgb(75, 192, 192)",
+                data: branData,
+                fill: false,
+              },
+            ],
+          },
+        });
+      }
+
+      function removeExistingTable() {
+        const existingTable = document.getElementById("reportTable");
+        if (existingTable) {
+          existingTable.parentNode.removeChild(existingTable);
+        }
+      }
+
+      function removeExistingChart() {
+        const existingChart = document.getElementById("lineChart");
+        if (existingChart) {
+          existingChart.parentNode.removeChild(existingChart);
+        }
+      }
+    </script>
+  </body>
+</html>
